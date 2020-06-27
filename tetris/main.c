@@ -19,6 +19,7 @@
 #include "mesh.h"
 //#include "model.h"
 #include "light_cube_vertices.h"
+#include "text.h"
 #include "pieces.h"
 
 #define SCR_WIDTH 800
@@ -458,7 +459,12 @@ int main (int argc, char *argv[])
     igStyleColorsDark(NULL);
     */
 
+    initText();
+
     glEnable(GL_DEPTH_TEST);
+    glEnable(GL_CULL_FACE);
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
     // tell stb_image.h to flip loaded texture's on the y-axis (before loading model).
     //stbi_set_flip_vertically_on_load(true);
@@ -501,10 +507,11 @@ int main (int argc, char *argv[])
         getViewMatrix(&camera, view);
         glm_perspective(glm_rad(camera.fov), (float) SCR_WIDTH / (float) SCR_HEIGHT, 0.1f, 100.0f, projection);
 
+        glUseProgram(lightProgram);
+
         glUniformMatrix4fv(glGetUniformLocation(lightProgram, "view"), 1, GL_FALSE, (float *) view);
         glUniformMatrix4fv(glGetUniformLocation(lightProgram, "projection"), 1, GL_FALSE, (float *) projection);
 
-        glUseProgram(lightProgram);
         glBindVertexArray(lightCubeVAO);
 
         // Piece fall down
@@ -531,6 +538,9 @@ int main (int argc, char *argv[])
 
         renderBoard(lightProgram);
         renderPiece(lightProgram);
+
+        vec3 textColor = {1.0f, 1.0f, 1.0f};
+        RenderText("This is sample text", 25.0f, 25.0f, 1.0f, textColor);
 
         glfwSwapBuffers(window);
         glfwPollEvents();

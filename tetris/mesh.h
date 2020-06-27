@@ -83,7 +83,7 @@ void drawMesh(Mesh *mesh, unsigned int shader)
     for (unsigned int i = 0; i < mesh->numTextures; i++) {
         glActiveTexture(GL_TEXTURE0 + i); // activate proper texture unit before binding
         // retrieve texture number (the N in diffuse_textureN)
-        char number[50], uniform[100];
+        char number[50], uniform[150];
         char *name = mesh->textures[i].type;
         if (strcmp(name, "texture_diffuse") == 0) {
             sprintf(number, "%d", diffuseNr++);

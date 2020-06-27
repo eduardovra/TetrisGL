@@ -16,6 +16,8 @@ add_subdirectory(external/cglm)
 # Im GUI
 #add_subdirectory(external/cimgui)
 
+find_package(Freetype REQUIRED)
+
 set(CMAKE_VERBOSE_MAKEFILE ON)
 #set(CMAKE_C_COMPILER "/usr/bin/clang")
 
@@ -34,8 +36,8 @@ set(CMAKE_VERBOSE_MAKEFILE ON)
 #	IMGUI_IMPL_API=extern\ \"C\"
 #	IMGUI_IMPL_OPENGL_LOADER_GLAD)
 
-add_executable(tetris tetris/main.c tetris/mesh.h tetris/model.h tetris/shader.h tetris/camera.h)
-target_include_directories(tetris PRIVATE external/glad/include external/stb)
-target_link_libraries(tetris glfw GL X11 pthread Xrandr Xi m c glad ${CMAKE_DL_LIBS})
+add_executable(tetris tetris/main.c tetris/text.c tetris/shader.c tetris/mesh.h tetris/model.h tetris/shader.h tetris/camera.h tetris/text.h)
+target_include_directories(tetris PRIVATE external/glad/include external/stb ${FREETYPE_INCLUDE_DIRS})
+target_link_libraries(tetris glfw GL X11 pthread Xrandr Xi m c glad ${FREETYPE_LIBRARIES} ${CMAKE_DL_LIBS})
 #target_compile_definitions(tetris PRIVATE
 #	IMGUI_IMPL_API=\ )
