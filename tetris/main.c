@@ -68,7 +68,7 @@ vec3 colorsDef[] = {
 
 float cubeSpeed = 0.2f;
 unsigned int board[BOARD_ROWS][BOARD_COLS];
-tPiece currentPiece;
+tPiece currentPiece, nextPiece;
 
 void error_callback (int error, const char *description)
 {
@@ -365,17 +365,17 @@ void renderBoard (unsigned int program)
     }
 }
 
-void renderPiece (unsigned int program)
+void renderPiece (unsigned int program, tPiece piece)
 {
     for (int row = 0; row < 5; row++) {
         for (int col = 0; col < 5; col++) {
-            if (GetBlockType(currentPiece.type, currentPiece.rotation, row, col)) {
-                float *color = colorsDef[currentPiece.color];
+            if (GetBlockType(piece.type, piece.rotation, row, col)) {
+                float *color = colorsDef[piece.color];
                 //if (GetBlockType(currentPiece.type, currentPiece.rotation, row, col) == 2) {
                 //    vec3 highlight = {1.0f, 1.0f, 0.0f};
                 //    color = highlight;
                 //}
-                drawCubeInBoard(program, row + currentPiece.position.row, col + currentPiece.position.col, color);
+                drawCubeInBoard(program, row + piece.position.row, col + piece.position.col, color);
             }
             //else {
             //    vec3 color = {1.0f, 1.0f, 1.0f};
@@ -396,15 +396,28 @@ void addCurrentPieceToBoard ()
     }
 }
 
-void spawnPiece ()
+void spawnPiece (bool firstPiece)
 {
-    currentPiece.color = getRandom(COLOR_RED, COLOR_BLUE);
-    currentPiece.rotation = getRandom(0, 3);
-    currentPiece.type = getRandom(0, 6);
+    if (firstPiece) {
+        currentPiece.color = getRandom(COLOR_RED, COLOR_BLUE);
+        currentPiece.rotation = getRandom(0, 3);
+        currentPiece.type = getRandom(0, 6);
+    }
+    else {
+        currentPiece = nextPiece;
+    }
+
+    // Change position
     //currentPiece.position.row = GetXInitialPosition(currentPiece.type, currentPiece.rotation);
     //currentPiece.position.col = GetYInitialPosition(currentPiece.type, currentPiece.rotation);
     currentPiece.position.row = -1;
     currentPiece.position.col = 5;
+
+    nextPiece.color = getRandom(COLOR_RED, COLOR_BLUE);
+    nextPiece.rotation = getRandom(0, 3);
+    nextPiece.type = getRandom(0, 6);
+    nextPiece.position.row = 0;
+    nextPiece.position.col = -7;
 }
 
 void movePiecesDown (int start_row)
@@ -459,7 +472,7 @@ int main (int argc, char *argv[])
     igStyleColorsDark(NULL);
     */
 
-    initText();
+    initText(SCR_WIDTH, SCR_HEIGHT);
 
     glEnable(GL_DEPTH_TEST);
     glEnable(GL_CULL_FACE);
@@ -485,7 +498,9 @@ int main (int argc, char *argv[])
     glEnableVertexAttribArray(0);
 
     initBoard();
-    spawnPiece();
+    memset(&currentPiece, 0, sizeof(currentPiece));
+    memset(&nextPiece, 0, sizeof(nextPiece));
+    spawnPiece(true);
     float elapsedTime = 0.0f;
 
     while (!glfwWindowShouldClose(window))
@@ -530,14 +545,15 @@ int main (int argc, char *argv[])
                 // check if theres lines to be deleted
                 checkDeleteLines();
                 // spawn a new one
-                spawnPiece();
+                spawnPiece(false);
             }
         }
 
         //paintCollision();
 
         renderBoard(lightProgram);
-        renderPiece(lightProgram);
+        renderPiece(lightProgram, currentPiece);
+        renderPiece(lightProgram, nextPiece);
 
         vec3 textColor = {1.0f, 1.0f, 1.0f};
         RenderText("This is sample text", 25.0f, 25.0f, 1.0f, textColor);

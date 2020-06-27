@@ -55,15 +55,15 @@ void createTextures ()
     }
 }
 
-void initText ()
+void initText (int width, int height)
 {
     if (FT_Init_FreeType(&ft)) {
         printf("ERROR: FT_Init_FreeType\n");
         exit(EXIT_FAILURE);
     }
 
-    //if (FT_New_Face(ft, "SnesItalic-vmAPZ.ttf", 0, &face)) {
-    if (FT_New_Face(ft, "arial.ttf", 0, &face)) {
+    if (FT_New_Face(ft, "SnesItalic-vmAPZ.ttf", 0, &face)) {
+    //if (FT_New_Face(ft, "arial.ttf", 0, &face)) {
         printf("ERROR: FT_New_Face\n");
         exit(EXIT_FAILURE);
     }
@@ -88,7 +88,7 @@ void initText ()
     glBindBuffer(GL_ARRAY_BUFFER, 0);
     glBindVertexArray(0);
 
-    glm_ortho(0.0f, 800.0f, 0.0f, 600.0f, -1000.0f, 1000.0f, projection2);
+    glm_ortho(0.0f, (float) width, 0.0f, (float) height, -1000.0f, 1000.0f, projection2);
 }
 
 void RenderText(char *text, float x, float y, float scale, vec3 color)
