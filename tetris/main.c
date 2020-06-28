@@ -496,6 +496,8 @@ int main (int argc, char *argv[])
     glBindBuffer(GL_ARRAY_BUFFER, VBO);
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void *) 0);
     glEnableVertexAttribArray(0);
+    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void *) (3 * sizeof(float)));
+    glEnableVertexAttribArray(1);
 
     initBoard();
     spawnPiece(true);
@@ -524,6 +526,7 @@ int main (int argc, char *argv[])
 
         glUniformMatrix4fv(glGetUniformLocation(lightProgram, "view"), 1, GL_FALSE, (float *) view);
         glUniformMatrix4fv(glGetUniformLocation(lightProgram, "projection"), 1, GL_FALSE, (float *) projection);
+        glUniform3fv(glGetUniformLocation(lightProgram, "viewPos"), 1, camera.cameraPos);
 
         glBindVertexArray(lightCubeVAO);
 
