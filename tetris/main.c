@@ -498,8 +498,6 @@ int main (int argc, char *argv[])
     glEnableVertexAttribArray(0);
 
     initBoard();
-    memset(&currentPiece, 0, sizeof(currentPiece));
-    memset(&nextPiece, 0, sizeof(nextPiece));
     spawnPiece(true);
     float elapsedTime = 0.0f;
 
@@ -555,8 +553,11 @@ int main (int argc, char *argv[])
         renderPiece(lightProgram, currentPiece);
         renderPiece(lightProgram, nextPiece);
 
+        char text[512];
+        float fps = 1.0f / deltaTime;
+        snprintf(text, sizeof(text), "TetrisGL %.4f ms %.2f FPS", deltaTime, fps);
         vec3 textColor = {1.0f, 1.0f, 1.0f};
-        RenderText("This is sample text", 25.0f, 25.0f, 1.0f, textColor);
+        RenderText(text, 15.0f, 15.0f, 1.0f, textColor);
 
         glfwSwapBuffers(window);
         glfwPollEvents();
