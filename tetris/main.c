@@ -66,7 +66,7 @@ vec3 colorsDef[] = {
     {0.0f, 0.0f, 1.0f}, // blue
 };
 
-float cubeSpeed = 0.2f;
+float fallDownSpeed = 0.5f;
 unsigned int board[BOARD_ROWS][BOARD_COLS];
 tPiece currentPiece, nextPiece;
 
@@ -176,7 +176,6 @@ void processInput (GLFWwindow *window)
                 currentPiece.position.col -= 1;
             }
             moveLeft = false;
-            //printf("row: %d col: %d\n", currentPiece.position.row, currentPiece.position.col);
         }
     }
     if (glfwGetKey(window, GLFW_KEY_LEFT) == GLFW_RELEASE) {
@@ -189,44 +188,27 @@ void processInput (GLFWwindow *window)
                 currentPiece.position.col += 1;
             }
             moveRight = false;
-            //printf("row: %d col: %d\n", currentPiece.position.row, currentPiece.position.col);
         }
     }
     if (glfwGetKey(window, GLFW_KEY_RIGHT) == GLFW_RELEASE) {
         moveRight = true;
     }
 
-    static bool moveDown = true, moveUp = true;
+    static bool moveDown = true;
 
     if (glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_PRESS) {
+        fallDownSpeed = 0.1f;
         if (moveDown) {
             if (pieceCanMove(currentPiece.rotation, currentPiece.position.row + 1, currentPiece.position.col)) {
-                currentPiece.position.row += 1;
+                //currentPiece.position.row += 1;
             }
             moveDown = false;
-            //printf("row: %d col: %d\n", currentPiece.position.row, currentPiece.position.col);
         }
     }
     if (glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_RELEASE) {
+        fallDownSpeed = 0.5f;
         moveDown = true;
     }
-
-    if (glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS) {
-        if (moveUp) {
-            if (pieceCanMove(currentPiece.rotation, currentPiece.position.row - 1, currentPiece.position.col)) {
-                currentPiece.position.row -= 1;
-            }
-            moveUp = false;
-            printf("row: %d col: %d\n", currentPiece.position.row, currentPiece.position.col);
-        }
-    }
-    if (glfwGetKey(window, GLFW_KEY_UP) == GLFW_RELEASE) {
-        moveUp = true;
-    }
-
-    //if (glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_PRESS) {
-    //    cubeSpeed += 0.01f;
-    //}
 
     static bool rotate = true;
     if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS) {
@@ -239,7 +221,6 @@ void processInput (GLFWwindow *window)
                 currentPiece.rotation = newRotation;
             }
             rotate = false;
-            //printf("rotation: %d\n", currentPiece.rotation);
         }
     }
 
@@ -291,6 +272,9 @@ void drawCube (unsigned int program, float x, float y, float *color)
 
     glm_mat4_identity(model);
     glm_translate(model, pos);
+    vec3 pivot = {0.0f, 0.0f, 0.0f};
+    vec3 axis = {0.0f, 1.0f, 0.0f};
+    glm_rotate_at(model, pivot, (float) glfwGetTime(), axis);
     glUniformMatrix4fv(glGetUniformLocation(program, "model"), 1, GL_FALSE, (float *) model);
     glUniform3fv(glGetUniformLocation(program, "color"), 1, color);
 
@@ -531,7 +515,7 @@ int main (int argc, char *argv[])
 
         // Piece fall down
         elapsedTime += deltaTime;
-        if (elapsedTime > 0.5f) { // 500 ms
+        if (elapsedTime > fallDownSpeed) { // 500 ms
             elapsedTime = 0.0f;
 
             if (pieceCanMove(currentPiece.rotation, currentPiece.position.row + 1, currentPiece.position.col)) {
